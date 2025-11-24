@@ -68,5 +68,6 @@ docs/html/
 .specify
 .serena
 .claude
-.github
+.github/agents
+.github/prompts
 specs
