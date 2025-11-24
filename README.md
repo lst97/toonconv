@@ -5,23 +5,13 @@
 [![GitHub stars](https://img.shields.io/github/stars/lst97/toonconv.svg)](https://github.com/lst97/toonconv/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/lst97/toonconv.svg)](https://github.com/lst97/toonconv/issues)
 
-**toonconv** is a blazingly fast, high-performance Rust CLI tool for converting JSON data into TOON (Token-Oriented Object Notation) format. It's designed for LLM applications, data processing pipelines, and scenarios where token efficiency matters.
+**toonconv** is a Rust CLI tool for converting JSON data into TOON (Token-Oriented Object Notation) format. It's designed for LLM applications, data processing pipelines, and scenarios where token efficiency matters.
 
 ## ✨ Key Features
 
-- **🚀 Ultra-Fast Performance**: ~190x faster than JavaScript implementations
 - **💾 Memory Efficient**: Optional SIMD acceleration and configurable memory limits
 - **📦 Multiple Input Methods**: Direct strings, stdin, files, and recursive directories
 - **📊 Token Optimization**: Reduces token count by 35-54% compared to JSON
-
-## 🚀 Performance Benchmarks
-
-| Implementation | CLI Execution Time | Token Efficiency |
-|----------------|--------------------|------------------|
-| **toonconv (Rust)** | **~5ms** | **35-54% reduction** |
-| @toon-format/cli (JS) | ~959ms | Baseline |
-
-> Benchmarks run on Apple M1 Mac Air. See [BENCHMARK.md](BENCHMARK.md) for detailed analysis.
 
 ## 📦 Installation
 
@@ -226,21 +216,6 @@ cargo clippy
 cargo fmt
 ```
 
-## 📊 Benchmarking
-
-Compare performance with the official JavaScript implementation:
-
-```bash
-# Run built-in benchmarks
-cargo bench --bench token_efficiency
-cargo bench --bench speed_comparison
-
-# Compare with JavaScript version
-node bench/speed.js
-```
-
-See [BENCHMARK.md](BENCHMARK.md) for detailed performance analysis.
-
 ## 🔧 Development
 
 ### Building
@@ -294,17 +269,6 @@ find . -name "*.json" -type f | while read file; do
 done
 ```
 
-### Git Hook Integration
-
-```bash
-#!/bin/bash
-# .git/hooks/pre-commit
-for file in config/*.json; do
-  toonconv "$file" -o "${file%.json}.toon"
-  git add "${file%.json}.toon"
-done
-```
-
 ## 🆘 Troubleshooting
 
 ### Build Issues
@@ -326,21 +290,4 @@ cargo build --release
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- TOON format specification contributors
-- Rust ecosystem for excellent tooling
-- Performance benchmarking frameworks
-
 ---
-
-<div align="center">
-
-**[Website](https://github.com/lst97/toonconv)** •
-**[Documentation](https://github.com/lst97/toonconv/wiki)** •
-**[Issues](https://github.com/lst97/toonconv/issues)** •
-**[Discussions](https://github.com/lst97/toonconv/discussions)**
-
-Made with ❤️ using Rust
-
-</div>
