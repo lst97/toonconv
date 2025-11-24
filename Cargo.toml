@@ -1,0 +1,109 @@
+[package]
+name = "toonconv"
+version = "0.1.0"
+edition = "2021"
+authors = ["lst97"]
+description = "A Rust CLI tool for converting JSON to TOON (Token-Oriented Object Notation) format"
+license = "MIT"
+repository = "https://github.com/lst97/toonconv"
+keywords = ["json", "toon", "converter", "cli", "llm"]
+categories = ["command-line-utilities", "data-processing"]
+
+[dependencies]
+# JSON parsing - standard choice for reliability
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+
+# CLI argument parsing with derive macros
+clap = { version = "4.0", features = ["derive", "cargo"] }
+
+# File system operations
+walkdir = "2.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Performance and utilities
+chrono = { version = "0.4", features = ["serde"] }
+indicatif = "0.17"
+console = "0.15"
+
+# Terminal utilities
+atty = "0.2"
+terminal_size = "0.3"
+
+# Optional SIMD performance (feature flag)
+simd-json = { version = "0.13", optional = true }
+
+[dev-dependencies]
+# Testing framework
+criterion = "0.5"
+tempfile = "3.0"
+
+# Test utilities
+assert_matches = "1.5"
+pretty_assertions = "1.0"
+tiktoken-rs = "0.5"
+serde_yaml = "0.9"
+quick-xml = { version = "0.31", features = ["serialize"] }
+
+[features]
+default = ["std"]
+std = []
+simd = ["simd-json"]
+
+[[bin]]
+name = "toonconv"
+path = "src/main.rs"
+
+[profile.release]
+# Optimizations for release builds
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+# Faster builds for development
+opt-level = 0
+debug = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[[test]]
+name = "phase5_directory_test"
+path = "tests/integration/phase5_directory_test.rs"
+
+[[test]]
+name = "toon_spec_compliance_test"
+path = "tests/integration/toon_spec_compliance_test.rs"
+
+[[test]]
+name = "spec_fixtures_test"
+path = "tests/integration/spec_fixtures_test.rs"
+
+[[test]]
+name = "full_test_suite"
+path = "tests/integration/full_test_suite.rs"
+
+[[test]]
+name = "usability_test"
+path = "tests/integration/usability_test.rs"
+
+[[test]]
+name = "regression_bench"
+path = "tests/performance/regression_bench.rs"
+
+[[bench]]
+name = "conversion_bench"
+harness = false
+
+[[bench]]
+name = "token_efficiency"
+harness = false
+
+[[bench]]
+name = "speed_comparison"
+harness = false
