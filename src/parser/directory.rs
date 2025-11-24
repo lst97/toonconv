@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 // use crate::error::ParseResult;
-use walkdir::WalkDir;
 use std::fs;
+use walkdir::WalkDir;
 
 /// Find JSON files in a directory. If recursive is true, use walkdir; otherwise list files.
 pub fn find_json_files(dir: &PathBuf, recursive: bool) -> Result<Vec<PathBuf>, std::io::Error> {

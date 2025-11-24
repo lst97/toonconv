@@ -256,5 +256,9 @@ fn benchmark_throughput_summary(c: &mut Criterion) {
     println!("────────────────────────────────────────────────────────────────────────────────");
 }
 
-criterion_group!(benches, benchmark_conversion_speed, benchmark_throughput_summary);
+criterion_group!(
+    benches,
+    benchmark_conversion_speed,
+    benchmark_throughput_summary
+);
 criterion_main!(benches);

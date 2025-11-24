@@ -9,15 +9,9 @@ pub mod limits;
 pub mod memory_opt;
 pub mod stats;
 
-pub use config::{
-    ConversionConfig, DelimiterType, QuoteStrategy,
-};
+pub use config::{ConversionConfig, DelimiterType, QuoteStrategy};
 
-pub use engine::{
-    convert_json_to_toon,
-    ToonData,
-};
-
+pub use engine::{convert_json_to_toon, ToonData};
 
 use crate::error::ConversionError;
 

@@ -46,7 +46,8 @@ struct TestOptions {
 }
 
 fn load_fixture(path: &Path) -> FixtureFile {
-    let content = fs::read_to_string(path).expect(&format!("Failed to read fixture file: {:?}", path));
+    let content =
+        fs::read_to_string(path).expect(&format!("Failed to read fixture file: {:?}", path));
     serde_json::from_str(&content).expect(&format!("Failed to parse fixture file: {:?}", path))
 }
 
@@ -114,7 +115,10 @@ fn run_fixture_tests(fixture_path: &str) {
         }
     }
 
-    println!("\nResults: {} passed, {} failed, {} skipped", passed, failed, skipped);
+    println!(
+        "\nResults: {} passed, {} failed, {} skipped",
+        passed, failed, skipped
+    );
 
     if failed > 0 {
         panic!("{} tests failed in {}", failed, fixture_path);

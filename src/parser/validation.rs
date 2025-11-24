@@ -1,23 +1,20 @@
 //! JSON validation utilities
 
 use crate::error::ParseResult;
-use serde_json::{Value, Number};
+use serde_json::{Number, Value};
 
 /// Validate JSON syntax and structure
 pub fn validate_json_syntax(json_str: &str) -> ParseResult<()> {
     if json_str.trim().is_empty() {
         return Err(crate::error::ParseError::new(
             "Empty JSON string".to_string(),
-            None
+            None,
         ));
     }
 
     // Basic syntax check using serde_json
     let _value: Value = serde_json::from_str(json_str)
-        .map_err(|e| crate::error::ParseError::new(
-            format!("Invalid JSON syntax: {}", e),
-            None
-        ))?;
+        .map_err(|e| crate::error::ParseError::new(format!("Invalid JSON syntax: {}", e), None))?;
 
     Ok(())
 }
@@ -31,14 +28,14 @@ pub fn validate_json_structure(value: &Value) -> ParseResult<()> {
 fn validate_value_complexity(
     value: &Value,
     current_depth: usize,
-    max_depth: Option<usize>
+    max_depth: Option<usize>,
 ) -> ParseResult<()> {
     // Check depth limit
     if let Some(limit) = max_depth {
         if current_depth > limit {
             return Err(crate::error::ParseError::new(
                 format!("Maximum nesting depth exceeded: {}", limit),
-                None
+                None,
             ));
         }
     }
@@ -48,7 +45,7 @@ fn validate_value_complexity(
             if obj.len() > 10000 {
                 return Err(crate::error::ParseError::new(
                     format!("Too many object properties: {}", obj.len()),
-                    None
+                    None,
                 ));
             }
 
@@ -61,7 +58,7 @@ fn validate_value_complexity(
             if arr.len() > 100000 {
                 return Err(crate::error::ParseError::new(
                     format!("Array too large: {} elements", arr.len()),
-                    None
+                    None,
                 ));
             }
 
@@ -71,10 +68,11 @@ fn validate_value_complexity(
             Ok(())
         }
         Value::String(s) => {
-            if s.len() > 10 * 1024 * 1024 { // 10MB
+            if s.len() > 10 * 1024 * 1024 {
+                // 10MB
                 return Err(crate::error::ParseError::new(
                     format!("String too long: {} characters", s.len()),
-                    None
+                    None,
                 ));
             }
             Ok(())
@@ -83,7 +81,7 @@ fn validate_value_complexity(
             validate_number(num)?;
             Ok(())
         }
-        Value::Bool(_) | Value::Null => Ok(())
+        Value::Bool(_) | Value::Null => Ok(()),
     }
 }
 
@@ -94,7 +92,7 @@ fn validate_number(num: &Number) -> ParseResult<()> {
         if !float_val.is_finite() {
             return Err(crate::error::ParseError::new(
                 "Non-finite floating point number".to_string(),
-                None
+                None,
             ));
         }
     }
@@ -110,7 +108,7 @@ pub fn check_potential_circular_references(value: &Value) -> ParseResult<()> {
 
 fn check_circular_refs(
     value: &Value,
-    visited: &mut std::collections::HashSet<String>
+    visited: &mut std::collections::HashSet<String>,
 ) -> ParseResult<()> {
     match value {
         Value::Object(obj) => {
@@ -119,13 +117,13 @@ fn check_circular_refs(
                 if visited.contains(key) {
                     return Err(crate::error::ParseError::new(
                         format!("Potential circular reference detected at key '{}'", key),
-                        None
+                        None,
                     ));
                 }
-                
+
                 let key_str = format!("obj.{}", key);
                 visited.insert(key_str.clone());
-                
+
                 check_circular_refs(val, visited)?;
                 visited.remove(&key_str);
             }
@@ -135,13 +133,13 @@ fn check_circular_refs(
             for (i, val) in arr.iter().enumerate() {
                 let arr_str = format!("arr[{}]", i);
                 visited.insert(arr_str.clone());
-                
+
                 check_circular_refs(val, visited)?;
                 visited.remove(&arr_str);
             }
             Ok(())
         }
-        Value::String(_) | Value::Number(_) | Value::Bool(_) | Value::Null => Ok(())
+        Value::String(_) | Value::Number(_) | Value::Bool(_) | Value::Null => Ok(()),
     }
 }
 
@@ -151,7 +149,7 @@ pub fn validate_encoding(json_str: &str) -> ParseResult<()> {
     if !json_str.is_ascii() && !json_str.is_char_boundary(json_str.len()) {
         return Err(crate::error::ParseError::new(
             "Invalid UTF-8 encoding".to_string(),
-            None
+            None,
         ));
     }
 
@@ -169,7 +167,7 @@ pub fn get_validation_stats(value: &Value) -> JsonValidationStats {
 
 fn collect_stats(value: &Value, stats: &mut JsonValidationStats, depth: usize) {
     stats.max_depth = stats.max_depth.max(depth);
-    
+
     match value {
         Value::Object(obj) => {
             stats.object_count += 1;
@@ -185,7 +183,7 @@ fn collect_stats(value: &Value, stats: &mut JsonValidationStats, depth: usize) {
         Value::Array(arr) => {
             stats.array_count += 1;
             stats.element_count += arr.len();
-            
+
             for val in arr {
                 collect_stats(val, stats, depth + 1);
             }
@@ -232,17 +230,21 @@ pub struct JsonValidationStats {
 impl JsonValidationStats {
     /// Check if the JSON structure meets complexity requirements
     pub fn meets_complexity_requirements(&self) -> bool {
-        self.max_depth <= 1000 &&
-        self.property_count <= 10000 &&
-        self.element_count <= 100000 &&
-        self.string_chars <= 10 * 1024 * 1024 // 10MB
+        self.max_depth <= 1000
+            && self.property_count <= 10000
+            && self.element_count <= 100000
+            && self.string_chars <= 10 * 1024 * 1024 // 10MB
     }
 
     /// Get a human-readable summary
     pub fn summary(&self) -> String {
         format!(
             "Objects: {}, Arrays: {}, Properties: {}, Elements: {}, Max depth: {}",
-            self.object_count, self.array_count, self.property_count, self.element_count, self.max_depth
+            self.object_count,
+            self.array_count,
+            self.property_count,
+            self.element_count,
+            self.max_depth
         )
     }
 }
@@ -324,7 +326,7 @@ mod tests {
     #[test]
     fn test_encoding_validation() {
         assert!(validate_encoding(r#"{"name": "test"}"#).is_ok());
-        
+
         // Invalid UTF-8 sequence (this is hard to test in Rust since it prevents invalid sequences)
         // The validation would catch issues in the parsing stage
     }

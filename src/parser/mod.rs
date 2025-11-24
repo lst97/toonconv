@@ -1,14 +1,14 @@
 //! JSON parsing and validation module
 
-pub mod validation;
 pub mod directory;
-pub mod recursive;
 pub mod filter;
+pub mod recursive;
+pub mod validation;
 
-use std::path::PathBuf;
-use std::io::Read;
+use crate::error::{ParseError, ParseResult};
 use serde::{Deserialize, Serialize};
-use crate::error::{ParseResult, ParseError};
+use std::io::Read;
+use std::path::PathBuf;
 
 /// Types of JSON input sources
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -76,13 +76,16 @@ impl JsonSourceType {
                 }
             }
             JsonSourceType::Directory(_) => None, // Don't estimate directory sizes
-            JsonSourceType::Stdin => None, // Unknown until read
+            JsonSourceType::Stdin => None,        // Unknown until read
         }
     }
 
     /// Check if this source represents a single JSON value (vs multiple files)
     pub fn is_single_value(&self) -> bool {
-        matches!(self, JsonSourceType::String(_) | JsonSourceType::File(_) | JsonSourceType::Stdin)
+        matches!(
+            self,
+            JsonSourceType::String(_) | JsonSourceType::File(_) | JsonSourceType::Stdin
+        )
     }
 }
 
@@ -102,9 +105,10 @@ impl JsonSource {
             JsonSource::String(content) => parse_from_string(content),
             JsonSource::File(path) => parse_from_file(path),
             JsonSource::Stdin => parse_from_stdin(),
-            JsonSource::Directory(_) => {
-                Err(ParseError::new("Cannot parse directory as single JSON value".to_string(), None))
-            }
+            JsonSource::Directory(_) => Err(ParseError::new(
+                "Cannot parse directory as single JSON value".to_string(),
+                None,
+            )),
         }
     }
 
@@ -128,12 +132,10 @@ impl JsonSource {
                 std::io::stdin().read_to_string(&mut buffer)?;
                 Ok(buffer)
             }
-            JsonSource::Directory(_) => {
-                Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "Cannot read directory as content",
-                ))
-            }
+            JsonSource::Directory(_) => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Cannot read directory as content",
+            )),
         }
     }
 }
@@ -145,13 +147,13 @@ fn parse_from_string(content: &str) -> ParseResult<serde_json::Value> {
         return Err(ParseError::new("Empty JSON string".to_string(), None));
     }
 
-    serde_json::from_str(trimmed)
-        .map_err(|e| {
-            ParseError::new(
-                format!("Invalid JSON: {}", e),
-                extract_error_location(&e, trimmed)
-            ).with_preview(get_error_preview(trimmed, &e))
-        })
+    serde_json::from_str(trimmed).map_err(|e| {
+        ParseError::new(
+            format!("Invalid JSON: {}", e),
+            extract_error_location(&e, trimmed),
+        )
+        .with_preview(get_error_preview(trimmed, &e))
+    })
 }
 
 /// Parse JSON from a file
@@ -165,7 +167,8 @@ fn parse_from_file(path: &PathBuf) -> ParseResult<serde_json::Value> {
 /// Parse JSON from standard input
 fn parse_from_stdin() -> ParseResult<serde_json::Value> {
     let mut buffer = String::new();
-    std::io::stdin().read_to_string(&mut buffer)
+    std::io::stdin()
+        .read_to_string(&mut buffer)
         .map_err(|e| ParseError::new(format!("Failed to read stdin: {}", e), None))?;
 
     parse_from_string(&buffer.trim())
@@ -175,7 +178,7 @@ fn parse_from_stdin() -> ParseResult<serde_json::Value> {
 fn extract_error_location(error: &serde_json::Error, content: &str) -> Option<(usize, usize)> {
     // Try to extract line and column from error message
     let error_msg = error.to_string();
-    
+
     // Look for patterns like "line X column Y"
     if let Some(line_start) = error_msg.find("line ") {
         if let Some(line_end) = error_msg.find(" column ") {
@@ -183,7 +186,7 @@ fn extract_error_location(error: &serde_json::Error, content: &str) -> Option<(u
             if let Some(col_end) = error_msg.find(" of ") {
                 let line_str = &error_msg[line_start + 5..line_end];
                 let col_str = &error_msg[col_start + 8..col_end];
-                
+
                 if let (Ok(line), Ok(col)) = (line_str.parse::<usize>(), col_str.parse::<usize>()) {
                     return Some((line, col));
                 }
@@ -214,16 +217,17 @@ fn get_error_preview(content: &str, error: &serde_json::Error) -> String {
             let error_line = lines[line - 1];
             let start = col.saturating_sub(1).min(error_line.len());
             let end = (col - 1 + 1).min(error_line.len());
-            
+
             if start < end {
-                return format!("...{}\n{}^", 
+                return format!(
+                    "...{}\n{}^",
                     &error_line[..start.max(error_line.len())],
                     " ".repeat(end - start)
                 );
             }
         }
     }
-    
+
     "Context not available".to_string()
 }
 
@@ -241,7 +245,7 @@ impl JsonMetadata {
     pub fn from_string(source: &str, source_type: JsonSourceType) -> Self {
         let line_count = source.lines().count();
         let size_bytes = source.len() as u64;
-        
+
         Self {
             source_type,
             size_bytes,
@@ -256,7 +260,7 @@ impl JsonMetadata {
         let source_type = JsonSourceType::File(path.clone());
         let line_count = content.lines().count();
         let size_bytes = metadata.len();
-        
+
         Ok(Self {
             source_type,
             size_bytes,
@@ -334,8 +338,8 @@ fn estimate_token_count(content: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::NamedTempFile;
     use std::io::Write;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn test_json_source_type() {
@@ -354,7 +358,7 @@ mod tests {
         let source = JsonSource::String(json_str.to_string());
         let result = source.parse();
         assert!(result.is_ok());
-        
+
         let value = result.unwrap();
         assert!(value.is_object());
     }
@@ -388,7 +392,7 @@ mod tests {
     fn test_estimate_token_count() {
         let simple = r#"{"a": 1}"#;
         assert_eq!(estimate_token_count(simple), 8); // Rough estimate
-        
+
         let complex = r#"
         {
             "users": [

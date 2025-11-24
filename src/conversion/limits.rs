@@ -1,19 +1,25 @@
-use crate::conversion::ConversionResult;
 use crate::conversion::config::ConversionConfig;
-use crate::parser::JsonSource;
+use crate::conversion::ConversionResult;
 use crate::error::{ConversionError, ConversionErrorKind};
+use crate::parser::JsonSource;
 use serde_json::Value;
 
 /// Check the source size before attempting to read or parse the JSON.
 /// This avoids loading very large files into memory if the user-configured
 /// limit is smaller than the file.
-pub fn check_source_size_before_read(source: &JsonSource, config: &ConversionConfig) -> ConversionResult<()> {
+pub fn check_source_size_before_read(
+    source: &JsonSource,
+    config: &ConversionConfig,
+) -> ConversionResult<()> {
     let source_type = source.source_type();
 
     if let Some(size) = source_type.estimated_size() {
         if size > config.memory_limit as u64 {
             return Err(ConversionError::conversion(
-                ConversionErrorKind::JsonTooLarge { size: size as usize, limit: config.memory_limit }
+                ConversionErrorKind::JsonTooLarge {
+                    size: size as usize,
+                    limit: config.memory_limit,
+                },
             ));
         }
     }
@@ -30,7 +36,10 @@ pub fn check_json_value_size(json: &Value, config: &ConversionConfig) -> Convers
             let len = s.len() as u64;
             if len > config.memory_limit as u64 {
                 return Err(ConversionError::conversion(
-                    ConversionErrorKind::MemoryLimitExceeded { size: len as usize, limit: config.memory_limit }
+                    ConversionErrorKind::MemoryLimitExceeded {
+                        size: len as usize,
+                        limit: config.memory_limit,
+                    },
                 ));
             }
         }
@@ -45,8 +54,8 @@ pub fn check_json_value_size(json: &Value, config: &ConversionConfig) -> Convers
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::NamedTempFile;
     use std::io::Write;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn test_check_source_size_before_read_small() {
@@ -72,7 +81,10 @@ mod tests {
         cfg.memory_limit = 1024 * 1024; // 1MB
 
         let res = check_source_size_before_read(&source, &cfg);
-        assert!(matches!(res.unwrap_err(), ConversionError::Conversion{..}));
+        assert!(matches!(
+            res.unwrap_err(),
+            ConversionError::Conversion { .. }
+        ));
     }
 
     #[test]
@@ -83,6 +95,9 @@ mod tests {
         let big_value = Value::String("a".repeat(100));
 
         let res = check_json_value_size(&big_value, &cfg);
-        assert!(matches!(res.unwrap_err(), ConversionError::Conversion{..}));
+        assert!(matches!(
+            res.unwrap_err(),
+            ConversionError::Conversion { .. }
+        ));
     }
 }

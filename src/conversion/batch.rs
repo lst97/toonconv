@@ -1,9 +1,13 @@
+use crate::conversion::engine::ConversionEngine;
 use crate::conversion::{ConversionConfig, ConversionResult};
 use crate::parser::JsonSource;
-use crate::conversion::engine::ConversionEngine;
 
 /// Batch convert multiple JsonSource inputs. Optionally continue on errors.
-pub fn convert_batch_sources(sources: Vec<JsonSource>, config: &ConversionConfig, continue_on_error: bool) -> ConversionResult<Vec<(JsonSource, crate::conversion::ToonData)>> {
+pub fn convert_batch_sources(
+    sources: Vec<JsonSource>,
+    config: &ConversionConfig,
+    continue_on_error: bool,
+) -> ConversionResult<Vec<(JsonSource, crate::conversion::ToonData)>> {
     let engine = ConversionEngine::new(config.clone());
     let mut results = Vec::new();
 

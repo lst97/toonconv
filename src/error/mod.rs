@@ -8,13 +8,19 @@ use std::path::PathBuf;
 #[derive(Debug, thiserror::Error)]
 pub enum ConversionErrorKind {
     #[error("JSON parse error: {message}")]
-    JsonParse { message: String, location: Option<(usize, usize)> },
+    JsonParse {
+        message: String,
+        location: Option<(usize, usize)>,
+    },
 
     #[error("TOON formatting error: {message}")]
     Formatting { message: String },
 
     #[error("IO error: {message}")]
-    Io { message: String, path: Option<PathBuf> },
+    Io {
+        message: String,
+        path: Option<PathBuf>,
+    },
 
     #[error("JSON too large: {size} bytes (limit: {limit} bytes)")]
     JsonTooLarge { size: usize, limit: usize },
@@ -85,10 +91,7 @@ impl ConversionError {
     }
 
     pub fn conversion(kind: ConversionErrorKind) -> Self {
-        Self::Conversion {
-            kind,
-            source: None,
-        }
+        Self::Conversion { kind, source: None }
     }
 
     pub fn conversion_with_source(kind: ConversionErrorKind, source: anyhow::Error) -> Self {
@@ -107,7 +110,10 @@ impl ConversionError {
         match self {
             Self::ParseError(err) => {
                 if let Some((line, col)) = err.location {
-                    format!("JSON parse error at line {}, column {}: {}", line, col, err.message)
+                    format!(
+                        "JSON parse error at line {}, column {}: {}",
+                        line, col, err.message
+                    )
                 } else {
                     format!("JSON parse error: {}", err.message)
                 }
@@ -115,26 +121,30 @@ impl ConversionError {
             Self::FormattingError(err) => {
                 format!("TOON formatting error: {}", err)
             }
-            Self::Conversion { kind, .. } => {
-                match kind {
-                    ConversionErrorKind::JsonTooLarge { size, limit } => {
-                        format!("JSON file too large: {} bytes (limit: {} bytes)", size, limit)
-                    }
-                    ConversionErrorKind::MemoryLimitExceeded { size, limit } => {
-                        format!("Memory limit exceeded: {} bytes (limit: {} bytes)", size, limit)
-                    }
-                    ConversionErrorKind::TimeoutExceeded { timeout } => {
-                        format!("Conversion timeout: {} seconds", timeout)
-                    }
-                    ConversionErrorKind::UnsupportedEncoding { encoding } => {
-                        format!("Unsupported encoding: {}", encoding)
-                    }
-                    ConversionErrorKind::CircularReference => {
-                        "Circular reference detected in JSON data".to_string()
-                    }
-                    _ => self.to_string(),
+            Self::Conversion { kind, .. } => match kind {
+                ConversionErrorKind::JsonTooLarge { size, limit } => {
+                    format!(
+                        "JSON file too large: {} bytes (limit: {} bytes)",
+                        size, limit
+                    )
                 }
-            }
+                ConversionErrorKind::MemoryLimitExceeded { size, limit } => {
+                    format!(
+                        "Memory limit exceeded: {} bytes (limit: {} bytes)",
+                        size, limit
+                    )
+                }
+                ConversionErrorKind::TimeoutExceeded { timeout } => {
+                    format!("Conversion timeout: {} seconds", timeout)
+                }
+                ConversionErrorKind::UnsupportedEncoding { encoding } => {
+                    format!("Unsupported encoding: {}", encoding)
+                }
+                ConversionErrorKind::CircularReference => {
+                    "Circular reference detected in JSON data".to_string()
+                }
+                _ => self.to_string(),
+            },
             Self::Other(err) => {
                 format!("Unexpected error: {}", err)
             }
@@ -271,7 +281,9 @@ mod tests {
     #[test]
     fn test_conversion_error_user_message() {
         let error = ConversionError::parse("Invalid JSON".to_string(), Some((1, 5)));
-        assert!(error.user_message().contains("JSON parse error at line 1, column 5"));
+        assert!(error
+            .user_message()
+            .contains("JSON parse error at line 1, column 5"));
     }
 
     #[test]

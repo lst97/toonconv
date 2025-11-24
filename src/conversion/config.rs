@@ -27,7 +27,10 @@ impl DelimiterType {
             "comma" | "," => Ok(DelimiterType::Comma),
             "tab" | "\t" => Ok(DelimiterType::Tab),
             "pipe" | "|" => Ok(DelimiterType::Pipe),
-            other => Err(format!("Invalid delimiter '{}'. Use 'comma', 'tab', or 'pipe'", other)),
+            other => Err(format!(
+                "Invalid delimiter '{}'. Use 'comma', 'tab', or 'pipe'",
+                other
+            )),
         }
     }
 }
@@ -127,7 +130,7 @@ impl Default for ConversionConfig {
             delimiter: DelimiterType::Comma,
             length_marker: true,
             quote_strings: QuoteStrategy::Smart,
-            memory_limit: 100 * 1024 * 1024, // 100MB
+            memory_limit: 100 * 1024 * 1024,   // 100MB
             timeout: Duration::from_secs(300), // 5 minutes
             enable_simd: false,
             pretty: true,
@@ -147,7 +150,7 @@ impl ConversionConfig {
     /// Create configuration optimized for small files (<1MB)
     pub fn small_files() -> Self {
         Self {
-            memory_limit: 10 * 1024 * 1024, // 10MB
+            memory_limit: 10 * 1024 * 1024,   // 10MB
             timeout: Duration::from_secs(30), // 30 seconds
             ..Default::default()
         }
@@ -156,7 +159,7 @@ impl ConversionConfig {
     /// Create configuration optimized for large files (>100MB)
     pub fn large_files() -> Self {
         Self {
-            memory_limit: 1024 * 1024 * 1024, // 1GB
+            memory_limit: 1024 * 1024 * 1024,   // 1GB
             timeout: Duration::from_secs(1800), // 30 minutes
             enable_simd: true,
             validate_output: false, // Skip validation for performance
@@ -167,7 +170,7 @@ impl ConversionConfig {
     /// Create configuration for batch processing
     pub fn batch_processing() -> Self {
         Self {
-            memory_limit: 512 * 1024 * 1024, // 512MB
+            memory_limit: 512 * 1024 * 1024,   // 512MB
             timeout: Duration::from_secs(600), // 10 minutes
             enable_simd: true,
             pretty: false, // Compact output for batch processing
@@ -352,9 +355,15 @@ mod tests {
 
     #[test]
     fn test_delimiter_from_str() {
-        assert_eq!(DelimiterType::from_str("comma").unwrap(), DelimiterType::Comma);
+        assert_eq!(
+            DelimiterType::from_str("comma").unwrap(),
+            DelimiterType::Comma
+        );
         assert_eq!(DelimiterType::from_str("tab").unwrap(), DelimiterType::Tab);
-        assert_eq!(DelimiterType::from_str("pipe").unwrap(), DelimiterType::Pipe);
+        assert_eq!(
+            DelimiterType::from_str("pipe").unwrap(),
+            DelimiterType::Pipe
+        );
         assert!(DelimiterType::from_str("invalid").is_err());
     }
 

@@ -222,7 +222,12 @@ fn to_xml(val: &serde_json::Value, key: &str) -> String {
     }
 }
 
-fn run_comparison(name: &str, json_data: &serde_json::Value, tabular_pct: f64, csv_support: bool) -> BenchmarkResult {
+fn run_comparison(
+    name: &str,
+    json_data: &serde_json::Value,
+    tabular_pct: f64,
+    csv_support: bool,
+) -> BenchmarkResult {
     // TOON
     let toon = convert_json(json_data).unwrap();
     let toon_tokens = count_tokens(&toon);
@@ -264,7 +269,13 @@ fn run_comparison(name: &str, json_data: &serde_json::Value, tabular_pct: f64, c
 }
 
 /// Print a single bar in the official format
-fn print_bar(label: &str, tokens: usize, max_tokens: usize, vs_json: Option<f64>, is_primary: bool) {
+fn print_bar(
+    label: &str,
+    tokens: usize,
+    max_tokens: usize,
+    vs_json: Option<f64>,
+    is_primary: bool,
+) {
     let bar_width = 20;
     let filled = if max_tokens > 0 {
         ((tokens as f64 / max_tokens as f64) * bar_width as f64).round() as usize
@@ -289,15 +300,24 @@ fn print_bar(label: &str, tokens: usize, max_tokens: usize, vs_json: Option<f64>
     };
 
     if is_primary {
-        println!("\u{2502} {} {}{} {:>6} tokens{}", label, bar, space, tokens, diff_str);
+        println!(
+            "\u{2502} {} {}{} {:>6} tokens{}",
+            label, bar, space, tokens, diff_str
+        );
     } else {
-        println!("\u{251c}\u{2500} vs {} {}{} {:>6} tokens{}", label, bar, space, tokens, diff_str);
+        println!(
+            "\u{251c}\u{2500} vs {} {}{} {:>6} tokens{}",
+            label, bar, space, tokens, diff_str
+        );
     }
 }
 
 fn print_result(res: &BenchmarkResult) {
     println!();
-    println!("{} \u{250a} Tabular: {:.0}%", res.name, res.tabular_percentage);
+    println!(
+        "{} \u{250a} Tabular: {:.0}%",
+        res.name, res.tabular_percentage
+    );
 
     let max_tokens = [
         res.toon_tokens,
@@ -317,20 +337,45 @@ fn print_result(res: &BenchmarkResult) {
     };
 
     // TOON (primary)
-    print_bar("TOON", res.toon_tokens, max_tokens, Some(vs_json(res.toon_tokens)), true);
+    print_bar(
+        "TOON",
+        res.toon_tokens,
+        max_tokens,
+        Some(vs_json(res.toon_tokens)),
+        true,
+    );
 
     // Comparisons
     print_bar("JSON", res.json_tokens, max_tokens, Some(0.0), false);
-    print_bar("JSON compact", res.json_compact_tokens, max_tokens, Some(vs_json(res.json_compact_tokens)), false);
-    print_bar("YAML", res.yaml_tokens, max_tokens, Some(vs_json(res.yaml_tokens)), false);
+    print_bar(
+        "JSON compact",
+        res.json_compact_tokens,
+        max_tokens,
+        Some(vs_json(res.json_compact_tokens)),
+        false,
+    );
+    print_bar(
+        "YAML",
+        res.yaml_tokens,
+        max_tokens,
+        Some(vs_json(res.yaml_tokens)),
+        false,
+    );
 
     // XML (last item)
     let xml_diff = vs_json(res.xml_tokens);
     let bar_width = 20;
     let filled = ((res.xml_tokens as f64 / max_tokens as f64) * bar_width as f64).round() as usize;
-    let bar: String = std::iter::repeat("\u{2591}").take(filled.min(bar_width)).collect();
-    let space: String = std::iter::repeat("\u{2591}").take(bar_width - filled.min(bar_width)).collect();
-    println!("\u{2514}\u{2500} vs XML {}{} {:>6} tokens (+{:.1}%)", bar, space, res.xml_tokens, xml_diff);
+    let bar: String = std::iter::repeat("\u{2591}")
+        .take(filled.min(bar_width))
+        .collect();
+    let space: String = std::iter::repeat("\u{2591}")
+        .take(bar_width - filled.min(bar_width))
+        .collect();
+    println!(
+        "\u{2514}\u{2500} vs XML {}{} {:>6} tokens (+{:.1}%)",
+        bar, space, res.xml_tokens, xml_diff
+    );
 }
 
 fn print_summary(results: &[BenchmarkResult]) {
@@ -353,13 +398,34 @@ fn print_summary(results: &[BenchmarkResult]) {
         ((current as f64 - total_json as f64) / total_json as f64) * 100.0
     };
 
-    print_bar("TOON", total_toon, max_total, Some(vs_json(total_toon)), true);
+    print_bar(
+        "TOON",
+        total_toon,
+        max_total,
+        Some(vs_json(total_toon)),
+        true,
+    );
     print_bar("JSON", total_json, max_total, Some(0.0), false);
-    print_bar("JSON compact", total_compact, max_total, Some(vs_json(total_compact)), false);
-    print_bar("YAML", total_yaml, max_total, Some(vs_json(total_yaml)), false);
+    print_bar(
+        "JSON compact",
+        total_compact,
+        max_total,
+        Some(vs_json(total_compact)),
+        false,
+    );
+    print_bar(
+        "YAML",
+        total_yaml,
+        max_total,
+        Some(vs_json(total_yaml)),
+        false,
+    );
 
     let xml_diff = vs_json(total_xml);
-    println!("\u{2514}\u{2500} vs XML {:>6} tokens (+{:.1}%)", total_xml, xml_diff);
+    println!(
+        "\u{2514}\u{2500} vs XML {:>6} tokens (+{:.1}%)",
+        total_xml, xml_diff
+    );
 }
 
 fn benchmark_token_efficiency(_c: &mut Criterion) {
@@ -377,7 +443,12 @@ fn benchmark_token_efficiency(_c: &mut Criterion) {
     println!("Datasets with nested or semi-uniform structures. CSV excluded.");
 
     let ecommerce = generate_ecommerce_orders(50);
-    let res = run_comparison("\u{1f6d2} E-commerce orders with nested structures", &ecommerce, 33.0, false);
+    let res = run_comparison(
+        "\u{1f6d2} E-commerce orders with nested structures",
+        &ecommerce,
+        33.0,
+        false,
+    );
     print_result(&res);
     results.push(res);
 
@@ -401,12 +472,22 @@ fn benchmark_token_efficiency(_c: &mut Criterion) {
     let mut flat_results = Vec::new();
 
     let employees = generate_employee_records(100);
-    let res = run_comparison("\u{1f465} Uniform employee records", &employees, 100.0, true);
+    let res = run_comparison(
+        "\u{1f465} Uniform employee records",
+        &employees,
+        100.0,
+        true,
+    );
     print_result(&res);
     flat_results.push(res);
 
     let metrics = generate_time_series(60);
-    let res = run_comparison("\u{1f4c8} Time-series analytics data", &metrics, 100.0, true);
+    let res = run_comparison(
+        "\u{1f4c8} Time-series analytics data",
+        &metrics,
+        100.0,
+        true,
+    );
     print_result(&res);
     flat_results.push(res);
 

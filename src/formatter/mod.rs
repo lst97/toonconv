@@ -179,12 +179,20 @@ impl ToonFormatter {
         }
 
         // Is numeric (starts with digit or is a valid number)
-        if key.chars().next().map(|c| c.is_ascii_digit()).unwrap_or(false) {
+        if key
+            .chars()
+            .next()
+            .map(|c| c.is_ascii_digit())
+            .unwrap_or(false)
+        {
             return true;
         }
 
         // Contains other structural characters
-        if key.chars().any(|c| matches!(c, '[' | ']' | '{' | '}' | ',')) {
+        if key
+            .chars()
+            .any(|c| matches!(c, '[' | ']' | '{' | '}' | ','))
+        {
             return true;
         }
 
@@ -385,7 +393,6 @@ impl ToonFormatter {
 
     /// Format mixed array (TOON dash-prefix format)
     fn format_mixed_array(&mut self, array: &[Value]) -> FormattingResult<String> {
-
         // TOON format for non-uniform arrays: use dash prefix with count
         let mut result = String::new();
         result.push_str(&format!("[{}]:", array.len()));
@@ -612,7 +619,6 @@ impl ToonFormatter {
                     let formatted = self.format_tabular_array(arr)?;
                     result.push_str(&formatted);
                 } else if self.is_uniform_primitive_array(arr) {
-
                     // Inline primitive array
                     let formatted = self.format_primitive_array(arr)?;
                     result.push_str(&formatted);

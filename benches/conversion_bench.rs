@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use toonconv::{convert_json, ConversionConfig};
 use serde_json::json;
+use toonconv::{convert_json, ConversionConfig};
 
 fn benchmark_json_to_toon_conversion(c: &mut Criterion) {
     // Simple object benchmark
@@ -118,5 +118,9 @@ fn benchmark_performance_profiles(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, benchmark_json_to_toon_conversion, benchmark_performance_profiles);
+criterion_group!(
+    benches,
+    benchmark_json_to_toon_conversion,
+    benchmark_performance_profiles
+);
 criterion_main!(benches);

@@ -96,11 +96,13 @@ impl ConversionStatistics {
 
         // Recalculate derived metrics
         self.token_reduction_percent = if self.input_size_bytes > 0 {
-            ((self.input_size_bytes as f32 - self.output_size_bytes as f32) 
-                / self.input_size_bytes as f32) * 100.0
+            ((self.input_size_bytes as f32 - self.output_size_bytes as f32)
+                / self.input_size_bytes as f32)
+                * 100.0
         } else {
             0.0
-        }.max(0.0);
+        }
+        .max(0.0);
 
         self.avg_time_per_operation_ms = if self.operation_count > 0 {
             self.processing_time_ms as f32 / self.operation_count as f32
@@ -146,7 +148,10 @@ impl ConversionStatistics {
 
         // Check processing time
         if self.avg_time_per_operation_ms <= targets.max_avg_time_ms {
-            passed.push(format!("Processing time: {:.1}ms", self.avg_time_per_operation_ms));
+            passed.push(format!(
+                "Processing time: {:.1}ms",
+                self.avg_time_per_operation_ms
+            ));
         } else {
             failed.push(format!(
                 "Processing time: {:.1}ms (target: {:.1}ms)",
@@ -166,7 +171,10 @@ impl ConversionStatistics {
 
         // Check token reduction
         if self.token_reduction_percent >= targets.min_token_reduction {
-            passed.push(format!("Token reduction: {:.1}%", self.token_reduction_percent));
+            passed.push(format!(
+                "Token reduction: {:.1}%",
+                self.token_reduction_percent
+            ));
         } else {
             failed.push(format!(
                 "Token reduction: {:.1}% (target: {:.1}%)",
@@ -211,10 +219,10 @@ pub struct PerformanceTargets {
 impl Default for PerformanceTargets {
     fn default() -> Self {
         Self {
-            max_avg_time_ms: 1000.0, // 1 second per operation
+            max_avg_time_ms: 1000.0,             // 1 second per operation
             max_memory_bytes: 100 * 1024 * 1024, // 100MB
-            min_token_reduction: 20.0, // 20% token reduction
-            min_throughput_mbps: 1.0, // 1MB/s minimum
+            min_token_reduction: 20.0,           // 20% token reduction
+            min_throughput_mbps: 1.0,            // 1MB/s minimum
         }
     }
 }
@@ -235,7 +243,11 @@ impl PerformanceCheck {
         if self.is_success() {
             "All performance targets met".to_string()
         } else {
-            format!("{} targets met, {} failed", self.passed.len(), self.failed.len())
+            format!(
+                "{} targets met, {} failed",
+                self.passed.len(),
+                self.failed.len()
+            )
         }
     }
 }
@@ -265,7 +277,7 @@ impl PerformanceTracker {
         memory_peak: usize,
     ) -> ConversionStatistics {
         let processing_time = self.start_time.elapsed();
-        
+
         let operation_stats = ConversionStatistics::for_conversion(
             input_size,
             output_size,
@@ -313,17 +325,19 @@ impl BenchmarkResults {
     ) -> Self {
         let total_time_ms = times_ms.iter().sum();
         let avg_time_ms = total_time_ms as f32 / iterations as f32;
-        
+
         let min_time_ms = times_ms.iter().min().copied().unwrap_or(0);
         let max_time_ms = times_ms.iter().max().copied().unwrap_or(0);
-        
+
         // Calculate standard deviation
-        let variance = times_ms.iter()
+        let variance = times_ms
+            .iter()
             .map(|&t| {
                 let diff = t as f32 - avg_time_ms;
                 diff * diff
             })
-            .sum::<f32>() / iterations as f32;
+            .sum::<f32>()
+            / iterations as f32;
         let std_deviation_ms = variance.sqrt();
 
         let total_time_sec = total_time_ms as f32 / 1000.0;
@@ -395,8 +409,18 @@ mod tests {
 
     #[test]
     fn test_statistics_combination() {
-        let mut stats1 = ConversionStatistics::for_conversion(1000, 600, Duration::from_millis(100), 1024 * 1024);
-        let stats2 = ConversionStatistics::for_conversion(2000, 1200, Duration::from_millis(200), 2 * 1024 * 1024);
+        let mut stats1 = ConversionStatistics::for_conversion(
+            1000,
+            600,
+            Duration::from_millis(100),
+            1024 * 1024,
+        );
+        let stats2 = ConversionStatistics::for_conversion(
+            2000,
+            1200,
+            Duration::from_millis(200),
+            2 * 1024 * 1024,
+        );
 
         stats1.combine(&stats2);
 
@@ -409,12 +433,8 @@ mod tests {
 
     #[test]
     fn test_efficiency_score() {
-        let stats = ConversionStatistics::for_conversion(
-            1000,
-            500,
-            Duration::from_millis(50),
-            512 * 1024,
-        );
+        let stats =
+            ConversionStatistics::for_conversion(1000, 500, Duration::from_millis(50), 512 * 1024);
 
         let score = stats.efficiency_score();
         assert!(score > 0.0);
@@ -455,12 +475,12 @@ mod tests {
     #[test]
     fn test_performance_tracker() {
         let tracker = PerformanceTracker::start();
-        
+
         // Simulate some work
         thread::sleep(Duration::from_millis(10));
-        
+
         let stats = tracker.finish(1000, 600, 1024 * 1024);
-        
+
         assert!(stats.processing_time_ms >= 10);
         assert_eq!(stats.input_size_bytes, 1000);
         assert_eq!(stats.output_size_bytes, 600);

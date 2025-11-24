@@ -4,8 +4,8 @@ use clap::{Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
 use std::time::Duration;
 
-use crate::conversion::{ConversionConfig, ConversionResult};
 use crate::conversion::config::{DelimiterType, QuoteStrategy};
+use crate::conversion::{ConversionConfig, ConversionResult};
 use crate::error::{ConversionError, ConversionErrorKind};
 
 pub mod path_mapping;
@@ -165,7 +165,11 @@ impl CliConfig {
 
     /// Create conversion configuration from CLI arguments
     fn create_conversion_config(args: &Args) -> ConversionResult<ConversionConfig> {
-        let delimiter = args.delimiter.as_ref().map(|d| d.clone().into()).unwrap_or(DelimiterType::Comma);
+        let delimiter = args
+            .delimiter
+            .as_ref()
+            .map(|d| d.clone().into())
+            .unwrap_or(DelimiterType::Comma);
         let memory_limit = parse_memory_limit(&args.memory_limit)?;
         let timeout = Duration::from_secs(args.timeout.unwrap_or(300));
 
@@ -184,7 +188,8 @@ impl CliConfig {
         };
 
         // Validate configuration
-        config.validate()
+        config
+            .validate()
             .map_err(|e| ConversionError::conversion(ConversionErrorKind::configuration(e)))?;
 
         Ok(config)
@@ -237,40 +242,45 @@ fn parse_memory_limit(limit: &Option<String>) -> ConversionResult<usize> {
         None => Ok(100 * 1024 * 1024), // 100MB default
         Some(limit_str) => {
             let limit_str = limit_str.trim().to_uppercase();
-            
+
             if limit_str.ends_with("MB") {
                 let size = &limit_str[..limit_str.len() - 2];
-                let mb = size.parse::<f64>()
-                    .map_err(|_| ConversionError::conversion(ConversionErrorKind::Configuration {
-                        message: format!("Invalid memory limit: {}", limit_str)
-                    }))?;
+                let mb = size.parse::<f64>().map_err(|_| {
+                    ConversionError::conversion(ConversionErrorKind::Configuration {
+                        message: format!("Invalid memory limit: {}", limit_str),
+                    })
+                })?;
                 Ok((mb * 1024.0 * 1024.0) as usize)
             } else if limit_str.ends_with("KB") {
                 let size = &limit_str[..limit_str.len() - 2];
-                let kb = size.parse::<f64>()
-                    .map_err(|_| ConversionError::conversion(ConversionErrorKind::Configuration {
-                        message: format!("Invalid memory limit: {}", limit_str)
-                    }))?;
+                let kb = size.parse::<f64>().map_err(|_| {
+                    ConversionError::conversion(ConversionErrorKind::Configuration {
+                        message: format!("Invalid memory limit: {}", limit_str),
+                    })
+                })?;
                 Ok((kb * 1024.0) as usize)
             } else if limit_str.ends_with("GB") {
                 let size = &limit_str[..limit_str.len() - 2];
-                let gb = size.parse::<f64>()
-                    .map_err(|_| ConversionError::conversion(ConversionErrorKind::Configuration {
-                        message: format!("Invalid memory limit: {}", limit_str)
-                    }))?;
+                let gb = size.parse::<f64>().map_err(|_| {
+                    ConversionError::conversion(ConversionErrorKind::Configuration {
+                        message: format!("Invalid memory limit: {}", limit_str),
+                    })
+                })?;
                 Ok((gb * 1024.0 * 1024.0 * 1024.0) as usize)
             } else if limit_str.ends_with("B") {
                 let size = &limit_str[..limit_str.len() - 1];
-                size.parse::<usize>()
-                    .map_err(|_| ConversionError::conversion(ConversionErrorKind::Configuration {
-                        message: format!("Invalid memory limit: {}", limit_str)
-                    }))
+                size.parse::<usize>().map_err(|_| {
+                    ConversionError::conversion(ConversionErrorKind::Configuration {
+                        message: format!("Invalid memory limit: {}", limit_str),
+                    })
+                })
             } else {
                 // Assume bytes
-                limit_str.parse::<usize>()
-                    .map_err(|_| ConversionError::conversion(ConversionErrorKind::Configuration {
-                        message: format!("Invalid memory limit: {}", limit_str)
-                    }))
+                limit_str.parse::<usize>().map_err(|_| {
+                    ConversionError::conversion(ConversionErrorKind::Configuration {
+                        message: format!("Invalid memory limit: {}", limit_str),
+                    })
+                })
             }
         }
     }
@@ -390,9 +400,18 @@ mod tests {
 
     #[test]
     fn test_memory_limit_parsing() {
-        assert_eq!(parse_memory_limit(&Some("1MB".to_string())).unwrap(), 1024 * 1024);
-        assert_eq!(parse_memory_limit(&Some("500KB".to_string())).unwrap(), 500 * 1024);
-        assert_eq!(parse_memory_limit(&Some("2GB".to_string())).unwrap(), 2 * 1024 * 1024 * 1024);
+        assert_eq!(
+            parse_memory_limit(&Some("1MB".to_string())).unwrap(),
+            1024 * 1024
+        );
+        assert_eq!(
+            parse_memory_limit(&Some("500KB".to_string())).unwrap(),
+            500 * 1024
+        );
+        assert_eq!(
+            parse_memory_limit(&Some("2GB".to_string())).unwrap(),
+            2 * 1024 * 1024 * 1024
+        );
         assert_eq!(parse_memory_limit(&Some("1024".to_string())).unwrap(), 1024);
     }
 
