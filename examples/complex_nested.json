@@ -1,0 +1,54 @@
+{
+  "patient": {
+    "id": "P12345",
+    "name": "John Doe",
+    "age": 45,
+    "problems": [
+      {
+        "Diabetes": [
+          {
+            "medications": [
+              {
+                "name": "Metformin",
+                "dosage": "500mg",
+                "frequency": "twice daily"
+              },
+              {
+                "name": "Insulin",
+                "dosage": "20 units",
+                "frequency": "before meals"
+              }
+            ],
+            "lastA1C": 7.2,
+            "targetA1C": 6.5
+          }
+        ]
+      },
+      {
+        "Asthma": [
+          {
+            "medications": [
+              {
+                "name": "Albuterol",
+                "dosage": "2 puffs",
+                "frequency": "as needed"
+              }
+            ],
+            "severity": "mild",
+            "triggers": ["pollen", "exercise", "cold air"]
+          }
+        ]
+      }
+    ],
+    "allergies": ["penicillin", "shellfish"],
+    "contact": {
+      "phone": "555-1234",
+      "email": "john.doe@example.com",
+      "emergency": {
+        "name": "Jane Doe",
+        "relationship": "spouse",
+        "phone": "555-5678"
+      }
+    }
+  }
+}
