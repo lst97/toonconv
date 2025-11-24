@@ -12,10 +12,7 @@
 - **🚀 Ultra-Fast Performance**: ~190x faster than JavaScript implementations
 - **💾 Memory Efficient**: Optional SIMD acceleration and configurable memory limits
 - **📦 Multiple Input Methods**: Direct strings, stdin, files, and recursive directories
-- **🔄 Batch Processing**: Process entire directory structures automatically
 - **📊 Token Optimization**: Reduces token count by 35-54% compared to JSON
-- **🛡️ Robust Error Handling**: Continues processing on errors with detailed reporting
-- **📈 Built-in Performance Monitoring**: Real-time progress bars and statistics
 
 ## 🚀 Performance Benchmarks
 
