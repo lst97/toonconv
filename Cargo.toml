@@ -31,7 +31,6 @@ indicatif = "0.17"
 console = "0.15"
 
 # Terminal utilities
-atty = "0.2"
 terminal_size = "0.3"
 
 # Optional SIMD performance (feature flag)

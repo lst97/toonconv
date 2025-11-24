@@ -60,11 +60,13 @@ mod tests {
     #[test]
     fn test_check_source_size_before_read_small() {
         let mut tmp = NamedTempFile::new().unwrap();
-        write!(tmp, "{{\"a\": 1}}\n").unwrap();
+        writeln!(tmp, "{{\"a\": 1}}").unwrap();
 
         let source = JsonSource::File(tmp.path().to_path_buf());
-        let mut cfg = ConversionConfig::default();
-        cfg.memory_limit = 1024 * 1024; // 1MB
+        let cfg = ConversionConfig {
+            memory_limit: 1024 * 1024, // 1MB
+            ..Default::default()
+        };
 
         assert!(check_source_size_before_read(&source, &cfg).is_ok());
     }
@@ -77,8 +79,10 @@ mod tests {
         tmp.write_all(&payload).unwrap();
 
         let source = JsonSource::File(tmp.path().to_path_buf());
-        let mut cfg = ConversionConfig::default();
-        cfg.memory_limit = 1024 * 1024; // 1MB
+        let cfg = ConversionConfig {
+            memory_limit: 1024 * 1024, // 1MB
+            ..Default::default()
+        };
 
         let res = check_source_size_before_read(&source, &cfg);
         assert!(matches!(
@@ -89,8 +93,10 @@ mod tests {
 
     #[test]
     fn test_check_json_value_size_exceeds() {
-        let mut cfg = ConversionConfig::default();
-        cfg.memory_limit = 10; // very small
+        let cfg = ConversionConfig {
+            memory_limit: 10, // very small
+            ..Default::default()
+        };
 
         let big_value = Value::String("a".repeat(100));
 
