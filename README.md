@@ -28,7 +28,13 @@
 
 ## 📦 Installation
 
-### From Source (Recommended)
+### Using Cargo (Easiest)
+
+```bash
+cargo install toonconv
+```
+
+### From Source
 
 ```bash
 # Clone the repository
@@ -79,6 +85,7 @@ users[2]{id,name}: 1,Alice 2,Bob
 toonconv supports **4 different ways** to convert JSON to TOON:
 
 ### 1. Direct JSON String Argument 🎯
+
 Perfect for quick conversions and testing.
 
 ```bash
@@ -93,6 +100,7 @@ toonconv '{"user": {"name": "Bob", "email": "bob@example.com"}}'
 ```
 
 ### 2. Standard Input (stdin) 🔄
+
 Great for Unix pipelines and data workflows.
 
 ```bash
@@ -107,6 +115,7 @@ jq '.results[]' data.json | toonconv --stdin
 ```
 
 ### 3. Single File Conversion 📄
+
 Convert individual files with custom output paths.
 
 ```bash
@@ -121,6 +130,7 @@ toonconv input.json --format pretty
 ```
 
 ### 4. Directory Batch Conversion 📁
+
 Process entire directories while preserving structure.
 
 ```bash
