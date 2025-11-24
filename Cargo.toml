@@ -8,7 +8,7 @@ readme = "README.md"
 license = "MIT"
 repository = "https://github.com/lst97/toonconv"
 keywords = ["json", "toon", "converter", "cli", "llm"]
-categories = ["command-line-utilities", "data-processing"]
+categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
 # JSON parsing - standard choice for reliability
