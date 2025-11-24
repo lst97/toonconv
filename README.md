@@ -9,7 +9,6 @@
 
 ## ✨ Key Features
 
-- **💾 Memory Efficient**: Optional SIMD acceleration and configurable memory limits
 - **📦 Multiple Input Methods**: Direct strings, stdin, files, and recursive directories
 - **📊 Token Optimization**: Reduces token count by 35-54% compared to JSON
 
