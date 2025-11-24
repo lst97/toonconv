@@ -165,22 +165,26 @@ impl ToonValidator {
         values
     }
 
-    /// Recursively extract values
+    /// Extract values iteratively using an explicit stack to prevent stack overflow
     fn extract_values_recursive(json: &Value, values: &mut Vec<String>) {
-        match json {
-            Value::Null => values.push("null".to_string()),
-            Value::Bool(b) => values.push(b.to_string()),
-            Value::Number(n) => values.push(n.to_string()),
-            Value::String(s) => values.push(s.clone()),
-            Value::Array(arr) => {
-                for item in arr {
-                    Self::extract_values_recursive(item, values);
+        let mut stack = vec![json];
+
+        while let Some(current) = stack.pop() {
+            match current {
+                Value::Null => values.push("null".to_string()),
+                Value::Bool(b) => values.push(b.to_string()),
+                Value::Number(n) => values.push(n.to_string()),
+                Value::String(s) => values.push(s.clone()),
+                Value::Array(arr) => {
+                    for item in arr.iter().rev() {
+                        stack.push(item);
+                    }
                 }
-            }
-            Value::Object(obj) => {
-                for (key, value) in obj {
-                    values.push(key.clone());
-                    Self::extract_values_recursive(value, values);
+                Value::Object(obj) => {
+                    for (key, value) in obj.iter().rev() {
+                        values.push(key.clone());
+                        stack.push(value);
+                    }
                 }
             }
         }
