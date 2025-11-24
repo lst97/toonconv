@@ -1,0 +1,236 @@
+{
+  "description": "Edge case test fixtures for TOON conversion",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "name": "empty_structures",
+      "input": {
+        "emptyObject": {},
+        "emptyArray": [],
+        "emptyString": "",
+        "nested": {
+          "empty": {}
+        }
+      },
+      "expected_features": ["empty object {}", "empty array []", "empty string \"\""]
+    },
+    {
+      "name": "null_values",
+      "input": {
+        "nullValue": null,
+        "arrayWithNulls": [null, 1, null, 2, null],
+        "objectWithNull": {
+          "value": null,
+          "other": "data"
+        }
+      },
+      "expected_features": ["null keyword", "null in arrays", "null in objects"]
+    },
+    {
+      "name": "boolean_edge_cases",
+      "input": {
+        "trueValue": true,
+        "falseValue": false,
+        "boolArray": [true, false, true, true, false],
+        "stringTrue": "true",
+        "stringFalse": "false"
+      },
+      "expected_features": ["boolean keywords", "quoted string literals"]
+    },
+    {
+      "name": "number_edge_cases",
+      "input": {
+        "zero": 0,
+        "negativeZero": -0,
+        "integer": 42,
+        "negativeInteger": -42,
+        "float": 3.14159,
+        "negativeFloat": -3.14,
+        "scientific": 1.5e10,
+        "negativeScientific": -2.3e-5,
+        "largeNumber": 9007199254740991,
+        "stringNumber": "42",
+        "stringFloat": "3.14"
+      },
+      "expected_features": ["various number formats", "quoted numeric strings"]
+    },
+    {
+      "name": "string_special_characters",
+      "input": {
+        "quotes": "She said \"hello\"",
+        "backslash": "C:\\Users\\Alice\\Documents",
+        "newline": "line1\nline2\nline3",
+        "tab": "col1\tcol2\tcol3",
+        "carriageReturn": "text\r\nwith\r\nCRLF",
+        "unicode": "Hello 世界 🌍",
+        "emoji": "😀🎉🚀💻🎨",
+        "mixed": "Special: :{},[]\"\\",
+        "leadingSpace": " starts with space",
+        "trailingSpace": "ends with space ",
+        "bothSpaces": " both sides ",
+        "controlChars": "line1:value1,line2:value2"
+      },
+      "expected_features": ["escaped quotes", "escaped backslashes", "unicode preservation", "whitespace handling"]
+    },
+    {
+      "name": "deeply_nested",
+      "input": {
+        "level1": {
+          "level2": {
+            "level3": {
+              "level4": {
+                "level5": {
+                  "level6": {
+                    "level7": {
+                      "level8": {
+                        "level9": {
+                          "level10": {
+                            "deepValue": "reached level 10"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected_features": ["deep nesting", "proper indentation", "structural integrity"]
+    },
+    {
+      "name": "mixed_type_arrays",
+      "input": {
+        "mixedPrimitives": [1, "two", 3.0, true, null, false, 42],
+        "mixedComplex": [
+          42,
+          "hello",
+          {"type": "object", "value": 100},
+          [1, 2, 3],
+          null,
+          true,
+          {"another": "object"}
+        ],
+        "nestedMixed": [
+          [1, "a"],
+          [2, "b"],
+          [3, "c"]
+        ]
+      },
+      "expected_features": ["mixed types", "proper type handling", "array formatting"]
+    },
+    {
+      "name": "uniform_arrays",
+      "input": {
+        "primitiveArray": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "stringArray": ["apple", "banana", "cherry", "date"],
+        "uniformObjects": [
+          {"id": 1, "name": "Alice", "age": 30},
+          {"id": 2, "name": "Bob", "age": 25},
+          {"id": 3, "name": "Charlie", "age": 35}
+        ]
+      },
+      "expected_features": ["tabular format", "schema declaration", "compact representation"]
+    },
+    {
+      "name": "large_keys",
+      "input": {
+        "veryLongKeyNameThatExceedsNormalLength": "value1",
+        "anotherVeryLongKeyWithManyWords": "value2",
+        "shortKey": "value3",
+        "key_with_underscores_and_numbers_123": "value4"
+      },
+      "expected_features": ["long key handling", "key formatting"]
+    },
+    {
+      "name": "special_key_names",
+      "input": {
+        "normal": "value",
+        "with space": "value",
+        "with:colon": "value",
+        "with,comma": "value",
+        "with{brace}": "value",
+        "with[bracket]": "value",
+        "\"quoted\"": "value",
+        "true": "not a boolean",
+        "false": "also not a boolean",
+        "null": "not null"
+      },
+      "expected_features": ["quoted keys", "keyword keys", "special character keys"]
+    },
+    {
+      "name": "arrays_of_arrays",
+      "input": {
+        "matrix": [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        "jagged": [
+          [1],
+          [2, 3],
+          [4, 5, 6]
+        ],
+        "nested3D": [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]]
+        ]
+      },
+      "expected_features": ["nested arrays", "matrix representation", "jagged arrays"]
+    },
+    {
+      "name": "objects_with_all_types",
+      "input": {
+        "allTypes": {
+          "nullValue": null,
+          "boolTrue": true,
+          "boolFalse": false,
+          "integerValue": 42,
+          "floatValue": 3.14,
+          "stringValue": "hello",
+          "arrayValue": [1, 2, 3],
+          "objectValue": {"nested": "data"}
+        }
+      },
+      "expected_features": ["all JSON types", "type preservation"]
+    },
+    {
+      "name": "whitespace_variations",
+      "input": {
+        "noSpaces": "nospaces",
+        "singleSpace": "single space",
+        "multipleSpaces": "multiple   spaces",
+        "tabCharacter": "has\ttab",
+        "newlineCharacter": "has\nnewline",
+        "mixedWhitespace": " \t mixed \n whitespace \r "
+      },
+      "expected_features": ["whitespace preservation", "proper escaping"]
+    },
+    {
+      "name": "unicode_edge_cases",
+      "input": {
+        "emoji": "🔥💯✨",
+        "chinese": "中文测试",
+        "japanese": "日本語テスト",
+        "korean": "한국어 테스트",
+        "arabic": "اختبار عربي",
+        "russian": "Русский тест",
+        "mixed": "Hello世界🌍Привет"
+      },
+      "expected_features": ["unicode support", "multi-language", "emoji"]
+    },
+    {
+      "name": "numeric_precision",
+      "input": {
+        "smallFloat": 0.000001,
+        "largeFloat": 123456789.123456789,
+        "scientificPositive": 1.23e100,
+        "scientificNegative": 1.23e-100,
+        "integer": 9007199254740991,
+        "negative": -9007199254740991
+      },
+      "expected_features": ["numeric precision", "scientific notation", "large numbers"]
+    }
+  ]
+}

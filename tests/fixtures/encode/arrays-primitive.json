@@ -1,0 +1,79 @@
+{
+  "version": "1.4",
+  "category": "encode",
+  "description": "Primitive array encoding - inline format for arrays of primitives",
+  "tests": [
+    {
+      "name": "encodes array of strings inline",
+      "input": {
+        "tags": ["rust", "programming", "web"]
+      },
+      "expected": "tags[3]: rust,programming,web",
+      "specSection": "9.1"
+    },
+    {
+      "name": "encodes array of numbers inline",
+      "input": {
+        "values": [1, 2, 3, 4, 5]
+      },
+      "expected": "values[5]: 1,2,3,4,5",
+      "specSection": "9.1"
+    },
+    {
+      "name": "encodes array of booleans inline",
+      "input": {
+        "flags": [true, false, true]
+      },
+      "expected": "flags[3]: true,false,true",
+      "specSection": "9.1"
+    },
+    {
+      "name": "encodes mixed primitive array inline",
+      "input": {
+        "data": [1, "two", 3.0, true, null]
+      },
+      "expected": "data[5]: 1,two,3,true,null",
+      "specSection": "9.1"
+    },
+    {
+      "name": "quotes strings with delimiters in primitive arrays",
+      "input": {
+        "items": ["a", "b,c", "d:e", "f"]
+      },
+      "expected": "items[4]: a,\"b,c\",\"d:e\",f",
+      "specSection": "9.1"
+    },
+    {
+      "name": "quotes ambiguous string values in arrays",
+      "input": {
+        "values": ["true", "false", "null", "42"]
+      },
+      "expected": "values[4]: \"true\",\"false\",\"null\",\"42\"",
+      "specSection": "9.1"
+    },
+    {
+      "name": "encodes empty array",
+      "input": {
+        "empty": []
+      },
+      "expected": "empty[0]:",
+      "specSection": "9.1"
+    },
+    {
+      "name": "encodes single-element array",
+      "input": {
+        "single": ["only"]
+      },
+      "expected": "single[1]: only",
+      "specSection": "9.1"
+    },
+    {
+      "name": "encodes array with null values",
+      "input": {
+        "nullable": [1, null, 3, null]
+      },
+      "expected": "nullable[4]: 1,null,3,null",
+      "specSection": "9.1"
+    }
+  ]
+}

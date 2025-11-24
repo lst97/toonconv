@@ -1,0 +1,148 @@
+{
+  "version": "1.4",
+  "category": "encode",
+  "description": "Primitive value encoding - strings, numbers, booleans, null",
+  "tests": [
+    {
+      "name": "encodes safe strings without quotes",
+      "input": "hello",
+      "expected": "hello",
+      "specSection": "7.2"
+    },
+    {
+      "name": "encodes safe string with underscore and numbers",
+      "input": "Ada_99",
+      "expected": "Ada_99",
+      "specSection": "7.2"
+    },
+    {
+      "name": "quotes empty string",
+      "input": "",
+      "expected": "\"\"",
+      "specSection": "7.2"
+    },
+    {
+      "name": "quotes string that looks like true",
+      "input": "true",
+      "expected": "\"true\"",
+      "specSection": "7.2",
+      "note": "String representation of boolean must be quoted"
+    },
+    {
+      "name": "quotes string that looks like false",
+      "input": "false",
+      "expected": "\"false\"",
+      "specSection": "7.2"
+    },
+    {
+      "name": "quotes string that looks like null",
+      "input": "null",
+      "expected": "\"null\"",
+      "specSection": "7.2"
+    },
+    {
+      "name": "quotes string that looks like integer",
+      "input": "42",
+      "expected": "\"42\"",
+      "specSection": "7.2"
+    },
+    {
+      "name": "quotes string that looks like negative decimal",
+      "input": "-3.14",
+      "expected": "\"-3.14\"",
+      "specSection": "7.2"
+    },
+    {
+      "name": "escapes newline in string",
+      "input": "line1\nline2",
+      "expected": "\"line1\\nline2\"",
+      "specSection": "7.1"
+    },
+    {
+      "name": "escapes tab in string",
+      "input": "tab\there",
+      "expected": "\"tab\\there\"",
+      "specSection": "7.1"
+    },
+    {
+      "name": "escapes backslash in string",
+      "input": "C:\\Users\\path",
+      "expected": "\"C:\\\\Users\\\\path\"",
+      "specSection": "7.1"
+    },
+    {
+      "name": "quotes string with array-like syntax",
+      "input": "[3]: x,y",
+      "expected": "\"[3]: x,y\"",
+      "specSection": "7.2",
+      "note": "Looks like array header"
+    },
+    {
+      "name": "quotes string starting with hyphen-space",
+      "input": "- item",
+      "expected": "\"- item\"",
+      "specSection": "7.2",
+      "note": "Looks like list item marker"
+    },
+    {
+      "name": "encodes Unicode string without quotes",
+      "input": "cafe",
+      "expected": "cafe",
+      "specSection": "7.2"
+    },
+    {
+      "name": "encodes Chinese characters without quotes",
+      "input": "\u4f60\u597d",
+      "expected": "\u4f60\u597d",
+      "specSection": "7.2"
+    },
+    {
+      "name": "encodes emoji without quotes",
+      "input": "\ud83d\ude80",
+      "expected": "\ud83d\ude80",
+      "specSection": "7.2"
+    },
+    {
+      "name": "encodes positive integer",
+      "input": 42,
+      "expected": "42",
+      "specSection": "2"
+    },
+    {
+      "name": "encodes decimal number",
+      "input": 3.14,
+      "expected": "3.14",
+      "specSection": "2"
+    },
+    {
+      "name": "encodes negative integer",
+      "input": -7,
+      "expected": "-7",
+      "specSection": "2"
+    },
+    {
+      "name": "encodes zero",
+      "input": 0,
+      "expected": "0",
+      "specSection": "2"
+    },
+    {
+      "name": "encodes true",
+      "input": true,
+      "expected": "true",
+      "specSection": "2"
+    },
+    {
+      "name": "encodes false",
+      "input": false,
+      "expected": "false",
+      "specSection": "2"
+    },
+    {
+      "name": "encodes null",
+      "input": null,
+      "expected": "null",
+      "specSection": "2"
+    }
+  ]
+}
