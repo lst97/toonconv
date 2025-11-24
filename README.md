@@ -325,13 +325,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Rust ecosystem for excellent tooling
 - Performance benchmarking frameworks
 
-## 📈 Roadmap
-
-- [ ] Streaming conversion for very large files
-- [ ] WebAssembly target for browser usage
-- [ ] Plugin system for custom formatters
-- [ ] GUI interface for non-technical users
-
 ---
 
 <div align="center">
