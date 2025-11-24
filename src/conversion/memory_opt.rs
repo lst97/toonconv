@@ -59,6 +59,11 @@ impl MemoryOptimizer {
 
     /// Estimate memory requirement for a JSON value
     pub fn estimate_size(&self, value: &Value) -> usize {
+        Self::estimate_value_size(value)
+    }
+
+    /// Static helper to estimate memory requirement for a JSON value
+    fn estimate_value_size(value: &Value) -> usize {
         match value {
             Value::Null => 4, // "null"
             Value::Bool(b) => {
@@ -73,7 +78,7 @@ impl MemoryOptimizer {
             Value::Array(arr) => {
                 let mut size = 2; // []
                 for item in arr {
-                    size += self.estimate_size(item) + 1; // + comma
+                    size += Self::estimate_value_size(item) + 1; // + comma
                 }
                 size
             }
@@ -81,7 +86,7 @@ impl MemoryOptimizer {
                 let mut size = 2; // {}
                 for (key, val) in obj {
                     size += key.len() + 2; // key + ": "
-                    size += self.estimate_size(val) + 1; // value + comma
+                    size += Self::estimate_value_size(val) + 1; // value + comma
                 }
                 size
             }

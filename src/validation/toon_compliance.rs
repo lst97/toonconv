@@ -161,26 +161,30 @@ impl ToonValidator {
     /// Extract values from JSON for validation
     fn extract_values(&self, json: &Value) -> Vec<String> {
         let mut values = Vec::new();
-        self.extract_values_recursive(json, &mut values);
+        Self::extract_values_recursive(json, &mut values);
         values
     }
 
-    /// Recursively extract values
-    fn extract_values_recursive(&self, json: &Value, values: &mut Vec<String>) {
-        match json {
-            Value::Null => values.push("null".to_string()),
-            Value::Bool(b) => values.push(b.to_string()),
-            Value::Number(n) => values.push(n.to_string()),
-            Value::String(s) => values.push(s.clone()),
-            Value::Array(arr) => {
-                for item in arr {
-                    self.extract_values_recursive(item, values);
+    /// Extract values iteratively using an explicit stack to prevent stack overflow
+    fn extract_values_recursive(json: &Value, values: &mut Vec<String>) {
+        let mut stack = vec![json];
+
+        while let Some(current) = stack.pop() {
+            match current {
+                Value::Null => values.push("null".to_string()),
+                Value::Bool(b) => values.push(b.to_string()),
+                Value::Number(n) => values.push(n.to_string()),
+                Value::String(s) => values.push(s.clone()),
+                Value::Array(arr) => {
+                    for item in arr.iter().rev() {
+                        stack.push(item);
+                    }
                 }
-            }
-            Value::Object(obj) => {
-                for (key, value) in obj {
-                    values.push(key.clone());
-                    self.extract_values_recursive(value, values);
+                Value::Object(obj) => {
+                    for (key, value) in obj.iter().rev() {
+                        values.push(key.clone());
+                        stack.push(value);
+                    }
                 }
             }
         }
@@ -214,7 +218,7 @@ impl ToonValidator {
         }
 
         // Check for control characters that should be escaped
-        for (i, ch) in output.chars().enumerate() {
+        for (i, ch) in output.char_indices() {
             if ch.is_control() && !matches!(ch, '\n' | '\r' | '\t') {
                 // Control characters should be escaped
                 if !output[..i].ends_with('\\') {
@@ -293,7 +297,7 @@ impl ToonValidator {
 }
 
 /// Validation report
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ValidationReport {
     /// Is structure valid
     pub structure_valid: bool,
@@ -317,14 +321,7 @@ pub struct ValidationReport {
 impl ValidationReport {
     /// Create a new validation report
     pub fn new() -> Self {
-        Self {
-            structure_valid: false,
-            brackets_balanced: false,
-            data_integrity: false,
-            encoding_valid: false,
-            formatting_consistent: false,
-            issues: Vec::new(),
-        }
+        Self::default()
     }
 
     /// Add an error to the report

@@ -1,6 +1,7 @@
 //! Command-line interface module
 
 use clap::{Parser, Subcommand, ValueEnum};
+use std::io::IsTerminal;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -362,7 +363,7 @@ impl CliUtils {
     /// Check if output should be colored
     pub fn should_use_color() -> bool {
         // Check if stdout is a terminal and supports color
-        atty::is(atty::Stream::Stdout) && std::env::var("NO_COLOR").is_err()
+        std::io::stdout().is_terminal() && std::env::var("NO_COLOR").is_err()
     }
 
     /// Get the terminal size

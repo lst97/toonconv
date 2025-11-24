@@ -450,8 +450,10 @@ mod tests {
 
     #[test]
     fn test_pretty_vs_compact() {
-        let mut config = ConversionConfig::default();
-        config.pretty = true;
+        let config = ConversionConfig {
+            pretty: true,
+            ..Default::default()
+        };
         let mut formatter = MixedArrayFormatter::new(&config);
 
         let array = json!([1, 2, 3]);
@@ -459,7 +461,10 @@ mod tests {
             .format_mixed_array(array.as_array().unwrap())
             .unwrap();
 
-        config.pretty = false;
+        let config = ConversionConfig {
+            pretty: false,
+            ..Default::default()
+        };
         let mut formatter = MixedArrayFormatter::new(&config);
         let compact_result = formatter
             .format_mixed_array(array.as_array().unwrap())

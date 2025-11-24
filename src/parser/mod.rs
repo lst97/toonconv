@@ -171,7 +171,7 @@ fn parse_from_stdin() -> ParseResult<serde_json::Value> {
         .read_to_string(&mut buffer)
         .map_err(|e| ParseError::new(format!("Failed to read stdin: {}", e), None))?;
 
-    parse_from_string(&buffer.trim())
+    parse_from_string(buffer.trim())
 }
 
 /// Extract error location from serde_json error
@@ -366,7 +366,7 @@ mod tests {
     #[test]
     fn test_parse_file_valid_json() {
         let mut tmp = NamedTempFile::new().unwrap();
-        write!(tmp, "{{\"name\": \"file\", \"value\": 123}}\n").unwrap();
+        writeln!(tmp, "{{\"name\": \"file\", \"value\": 123}}").unwrap();
 
         let source = JsonSource::File(tmp.path().to_path_buf());
         let result = source.parse();

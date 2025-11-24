@@ -398,7 +398,7 @@ impl ToonFormatter {
         result.push_str(&format!("[{}]:", array.len()));
 
         // Note: caller handles base indentation, we just add one level for array items
-        for (_i, value) in array.iter().enumerate() {
+        for value in array.iter() {
             result.push('\n');
             result.push_str(&self.indent());
 
@@ -521,7 +521,7 @@ impl ToonFormatter {
                                             }
                                         } else if inner_val.is_object() {
                                             // Format nested object
-                                            result.push_str(":");
+                                            result.push(':');
                                             result.push('\n');
                                             self.indent_level += 1;
                                             let formatted =
@@ -710,17 +710,17 @@ impl ToonFormatter {
 
             // If we go negative, something is wrong
             if brace_count < 0 || bracket_count < 0 {
-                return Err(FormattingError::invalid_structure(format!(
-                    "Unbalanced brackets in TOON output"
-                )));
+                return Err(FormattingError::invalid_structure(
+                    "Unbalanced brackets in TOON output".to_string(),
+                ));
             }
         }
 
         // If we don't end at 0, brackets are unbalanced
         if brace_count != 0 || bracket_count != 0 {
-            return Err(FormattingError::invalid_structure(format!(
-                "Unbalanced brackets in TOON output"
-            )));
+            return Err(FormattingError::invalid_structure(
+                "Unbalanced brackets in TOON output".to_string(),
+            ));
         }
 
         Ok(())
@@ -758,8 +758,10 @@ mod tests {
 
     #[test]
     fn test_string_quoting() {
-        let mut config = ConversionConfig::default();
-        config.quote_strings = crate::conversion::QuoteStrategy::Smart;
+        let config = ConversionConfig {
+            quote_strings: crate::conversion::QuoteStrategy::Smart,
+            ..Default::default()
+        };
         let mut formatter = ToonFormatter::new(config);
 
         let json = serde_json::json!({

@@ -125,7 +125,7 @@ impl ConversionEngine {
         limits::check_source_size_before_read(source, &self.config)?;
 
         // Parse JSON from source
-        let json_value = source.parse().map_err(|e| ConversionError::ParseError(e))?;
+        let json_value = source.parse().map_err(ConversionError::ParseError)?;
 
         // Convert to TOON
         self.convert(&json_value)
@@ -140,7 +140,7 @@ impl ConversionEngine {
     /// Validate input JSON data
     fn validate_input(&self, json_data: &Value) -> ConversionResult<()> {
         // Check basic structure validation
-        validate_json_structure(json_data).map_err(|e| ConversionError::ParseError(e))?;
+        validate_json_structure(json_data).map_err(ConversionError::ParseError)?;
 
         // Check for circular references
         let mut detector = CircularRefDetector::new(100); // Max depth 100
@@ -256,7 +256,7 @@ impl ConversionEngine {
                     uniform_arrays.push(ArraySchema {
                         element_count: arr.len(),
                         field_count: Some(first_obj.len()),
-                        field_names: Some(first_obj.keys().map(|k| k.clone()).collect()),
+                        field_names: Some(first_obj.keys().cloned().collect()),
                     });
                 }
 
@@ -301,7 +301,6 @@ impl ConversionEngine {
 }
 
 /// High-level conversion functions
-
 /// Convert JSON value to TOON with default configuration
 pub fn convert_json_to_toon(
     json_data: &Value,

@@ -311,7 +311,7 @@ mod tests {
     fn test_number_validation() {
         let valid_numbers = serde_json::json!({
             "integer": 42,
-            "float": 3.14,
+            "float": 3.15,
             "negative": -10,
             "zero": 0
         });
