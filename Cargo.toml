@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["lst97"]
 description = "A Rust CLI tool for converting JSON to TOON (Token-Oriented Object Notation) format"
+readme = "README.md"
 license = "MIT"
 repository = "https://github.com/lst97/toonconv"
 keywords = ["json", "toon", "converter", "cli", "llm"]
